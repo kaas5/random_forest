@@ -92,7 +92,6 @@ def select_best_attribute(sub_data, sub_labels):
     return best_attr, best_split
 
 class Tree:
-
     def __init__(self):
         # structure of a node in the tree (== key-value in the dictionary)
         # attribute, split, node_id_l, node_id_r
@@ -102,11 +101,8 @@ class Tree:
         if data.shape[0] != 0:
             attribute, split = select_best_attribute(data, labels)
             if attribute is None:
-                # TODO pak de label van deze leaf op een andere manier?
                 classes, counts = np.unique(labels, return_counts=True)
-                
                 self.tree_dict[node_id] = classes[np.argmax(counts)]
-                #self.tree_dict[node_id] = labels[0]
                 return
 
             dl, ll, dr, lr = split_data(data, labels, attribute, split)
@@ -141,6 +137,10 @@ class Tree:
     def print_all_nodes(self):
         for id in self.tree_dict.keys():
             print(id, self.tree_dict[id])
+
+class Forest:
+    def __init__(self):
+
 
 sub_data, sub_labels = select_random_subset(data, labels, 50)
 
