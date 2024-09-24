@@ -103,7 +103,10 @@ class Tree:
             attribute, split = select_best_attribute(data, labels)
             if attribute is None:
                 # TODO pak de label van deze leaf op een andere manier?
-                self.tree_dict[node_id] = labels[0]
+                classes, counts = np.unique(labels, return_counts=True)
+                
+                self.tree_dict[node_id] = classes[np.argmax(counts)]
+                #self.tree_dict[node_id] = labels[0]
                 return
 
             dl, ll, dr, lr = split_data(data, labels, attribute, split)
@@ -138,8 +141,6 @@ class Tree:
     def print_all_nodes(self):
         for id in self.tree_dict.keys():
             print(id, self.tree_dict[id])
-
-
 
 sub_data, sub_labels = select_random_subset(data, labels, 50)
 
