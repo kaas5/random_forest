@@ -88,7 +88,7 @@ def select_best_attribute(sub_data, sub_labels):
             best_attr = i
             best_split = best_split_value
 
-    print('best gain', best_gain)
+    #print('best gain', best_gain)
     return best_attr, best_split
 
 class Tree:
@@ -103,6 +103,7 @@ class Tree:
             if attribute is None:
                 classes, counts = np.unique(labels, return_counts=True)
                 self.tree_dict[node_id] = classes[np.argmax(counts)]
+                #self.tree_dict[node_id] = labels[0]
                 return
 
             dl, ll, dr, lr = split_data(data, labels, attribute, split)
@@ -140,6 +141,20 @@ class Tree:
 
 class Forest:
     def __init__(self):
+        self.forest = []
+
+    def start_forest(self, data, labels, forest_size, data_split_size):
+        self.forest_size = forest_size
+        for _ in range(self.forest_size):
+            sub_data, sub_labels = select_random_subset(data, labels, data_split_size)
+            tree = Tree()
+            tree.start_tree(sub_data,sub_labels)
+            self.forest.append(tree)
+
+    def start_traverse_forest(self, datapoint):
+        res = [tree.start_traverse_tree(datapoint) for tree in self.forest]
+        classes, counts = np.unique(res, return_counts=True)
+        return classes[np.argmax(counts)]
 
 
 sub_data, sub_labels = select_random_subset(data, labels, 50)
@@ -147,10 +162,16 @@ sub_data, sub_labels = select_random_subset(data, labels, 50)
 #print(attribute_loop(sub_data, sub_labels, 0))
 #print(select_best_attribute(sub_data, sub_labels))
 
-tree = Tree()
-tree.start_tree(sub_data,sub_labels)
+#tree = Tree()
+#tree.start_tree(sub_data,sub_labels)
 
-print(tree.start_traverse_tree(sub_data[0]))
-print(sub_labels[0])
+#print(tree.start_traverse_tree(data[0]))
+#print(labels[0])
 
-tree.print_all_nodes()
+#tree.print_all_nodes()
+
+forest = Forest()
+forest.start_forest(data, labels, 10, 50)
+
+for i in range(0, 150):
+    print(forest.start_traverse_forest(data[i]),labels[i])
